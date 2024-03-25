@@ -11,12 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(readr)
-ficheros<-list.files(path = "./CarpetaAlumno/CarpetaAlumno/data", pattern = ".txt", full.names = TRUE)
+ficheros<-list.files(path = "./data", pattern = ".txt", full.names = TRUE)
 
 lista<-c()
 
 for (fichero in ficheros) {
   r <- read_lines(fichero)
+  r <- strsplit(r, "/n")
   lista <- append(lista, list(r))
 }
 ```
