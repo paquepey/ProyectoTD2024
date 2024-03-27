@@ -26,6 +26,17 @@ for (fichero in ficheros) {
   telefono_r <- r[grep("TELÉFONO:", r)] 
   telefono <- substring(telefono_r, regexpr(":", text = telefono_r) + 1)
   fecha <- r[5]
+  if (!is.na(fecha)) {
+    partes_fecha_operacion <- strsplit (fecha, " ")
+    fecha <- partes_fecha_operacion[[1]][1]
+    hora<-partes_fecha_operacion[[1]][2]
+    op<-partes_fecha_operacion[[1]][5]
+    
+    
+  } else{
+    fecha<-NA
+    numero_operacion<-NA
+  }
   num_op <- r[6]
   fac <- r[7]
   
@@ -39,7 +50,8 @@ for (fichero in ficheros) {
       ciudad = ciudad,
       Telefono = telefono,
       Fecha = fecha,
-      numero_operacion = num_op,
+      Hora = hora,
+      numero_operacion = op,
       factura = fac,
       productos = productos,
       stringsAsFactors = FALSE
@@ -64,17 +76,8 @@ for (fichero in ficheros) {
 
 # Combinar todos los data frames en uno solo
 datos <- bind_rows(lista)
+#datos <- separate(datos, Fecha, into=c("Fecha", "Hora"))
+#head(datos)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+```
