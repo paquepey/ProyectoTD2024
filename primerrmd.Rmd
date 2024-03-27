@@ -9,16 +9,72 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, warning=FALSE}
 library(readr)
-ficheros<-list.files(path = "./data", pattern = ".txt", full.names = TRUE)
+library(dplyr)
 
-lista<-c()
+ficheros <- list.files(path = "./data", pattern = ".txt", full.names = TRUE)
+
+lista <- list()
 
 for (fichero in ficheros) {
-  r <- read_lines(fichero)
-  r <- strsplit(r, "/n")
-  lista <- append(lista, list(r))
+  r <- read_lines(fichero, locale = locale(encoding = "latin1"))
+  r <- r[r != '']
+  empresa <- r[1]
+  direc <- r[2]
+  ciudad <- r[3]
+  telefono_r <- r[grep("TELÉFONO:", r)] 
+  telefono <- substring(telefono_r, regexpr(":", text = telefono_r) + 1)
+  fecha <- r[5]
+  num_op <- r[6]
+  fac <- r[7]
+  
+  # Encontrar la línea que contiene "TOTAL" utilizando una expresión regular
+  total_line_index <- grep("TOTAL \\(", r, ignore.case = TRUE)
+  if (length(total_line_index) > 0) {
+    productos <- r[8:(total_line_index - 1)]  # Extraer los productos
+    df <- data.frame(
+      empresa = empresa,
+      direccion = direc,
+      ciudad = ciudad,
+      Telefono = telefono,
+      Fecha = fecha,
+      numero_operacion = num_op,
+      factura = fac,
+      productos = productos,
+      stringsAsFactors = FALSE
+    )
+  } else {
+    # Si no se encuentra "TOTAL (?)" establecer productos como NA
+    df <- data.frame(
+      empresa = empresa,
+      direccion = direc,
+      ciudad = ciudad,
+      Telefono = telefono,
+      Fecha = fecha,
+      numero_operacion = num_op,
+      factura = fac,
+      productos = NA,
+      stringsAsFactors = FALSE
+    )
+  }
+  
+  lista[[length(lista) + 1]] <- df
 }
-```
+
+# Combinar todos los data frames en uno solo
+datos <- bind_rows(lista)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
